@@ -356,3 +356,29 @@ Compile and run this program, and you should see the content of "example.txt" di
 
 `gcc -o output_read read.c`
 `./output_read`
+
+---
+
+1. **Question:**
+   - In the context of the Linux kernel and system calls, what is the role of the C library (libc)? How does it facilitate communication between user-space programs and the kernel?
+     
+The C library (libc) serves as a high-level interface between user-space programs and the kernel. It provides a set of functions that encapsulate system calls, making it easier for developers to interact with the kernel without dealing with low-level details. The libc functions translate high-level operations into the appropriate system calls, allowing user-space programs to command the kernel, as you mentioned.
+Correct! The C library (libc) serves as a high-level interface between user-space programs and the kernel. It provides a set of functions that encapsulate system calls, making it easier for developers to interact with the kernel without dealing with low-level details. The libc functions translate high-level operations into the appropriate system calls, allowing user-space programs to command the kernel, as you mentioned.
+
+Now, let's move on to the next question:
+
+2. **Question:**
+   - In the provided C program example that reads from a file, which system call is used to open the file, and what is its purpose?
+
+```c
+file_descriptor = open("example.txt", O_RDONLY);
+```
+
+In this line, `open` is the function used to open the file "example.txt" for reading (`O_RDONLY` flag indicates read-only mode). The resulting file descriptor (`file_descriptor`) is then used with the `read` function to read data from the file.
+
+Let's proceed to the next question:
+
+3. **Question:**
+   - What does the `read` function do in the context of the provided C program, and which system call does it correspond to in the Linux kernel?
+
+The read function in the provided C program is used to read data from the file. It corresponds to the read system call in the Linux kernel.
