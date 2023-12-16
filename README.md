@@ -242,4 +242,58 @@ Controlling and configuring hardware in the Linux kernel often involves using co
     sudo sysctl -w <parameter=value>
     ```
 
-Remember that making changes to hardware configurations can have significant consequences, and you should be careful when using these commands, especially if you are not familiar with the specific hardware or the consequences of the changes you're making. Always refer to documentation and relevant resources when configuring or controlling hardware in a Linux environment.
+## Let's talk about system call.
+System calls are the mechanism by which user-space programs interact with the kernel in an operating system. When a program needs access to certain privileged functionalities, such as interacting with hardware, managing processes, or accessing files, it makes a request to the kernel through a system call. 
+
+![image](https://github.com/mrnazu/The-Linux-Kernel/assets/108541991/c7fbd9ce-ada3-4e8a-b9ee-4974bf53c368)
+
+
+Here's an overview of the mechanics behind system calls:
+
+1. **User-Space to Kernel-Space Transition:**
+   - When a user-space program needs to perform an operation that requires kernel privileges, it triggers a system call. This is typically done through a high-level language-specific interface (e.g., C library functions like `open()`, `read()`, `write()`).
+
+2. **System Call Number:**
+   - Each system call has a unique identifier, known as the system call number. This number is used to identify the specific operation the program is requesting. The system call number is often passed in a register or a specific CPU register (e.g., `eax` on x86 architecture).
+
+3. **Arguments:**
+   - System calls may require additional parameters or arguments to provide necessary information about the operation. These arguments are often passed in registers or on the program's stack, depending on the architecture.
+
+4. **Kernel Mode Activation:**
+   - The processor switches from user mode to kernel mode to execute the system call. This switch involves changing the processor's execution level to allow privileged instructions to be executed.
+
+5. **Interrupt or Exception Handling:**
+   - The transition to kernel mode is typically triggered by an interrupt or an exception. Software interrupts (e.g., `int 0x80` on x86) or system call instructions initiate the switch to kernel mode. The processor responds to these events by executing a designated kernel routine.
+
+6. **System Call Table:**
+   - The system call number is used to index into a system call table, which is an array of function pointers in the kernel. Each entry in the table corresponds to a specific system call, and the associated function is invoked.
+
+7. **Kernel Execution:**
+   - The kernel now executes the requested system call on behalf of the user-space program. It validates the arguments, performs the requested operation, and prepares the results (if any).
+
+8. **Return to User Mode:**
+   - After the system call is executed, the kernel returns control to the user mode. This involves restoring the user-mode execution context and switching back to user mode.
+
+9. **Return Value:**
+   - The result of the system call is often returned to the user-space program. This could be a status code indicating success or failure, and additional information may be provided through function return values or pointers to user-space buffers.
+
+The exact mechanics can vary based on the architecture and the operating system. For example, x86 and ARM architectures may have different assembly instructions for initiating system calls. Additionally, the kernel interface and system call numbers can differ between operating systems (e.g., Linux, Windows).
+
+Understanding system call mechanics is fundamental to understanding how user-space programs interact with the kernel and leverage its capabilities while maintaining a clear separation between user space and kernel space.
+
+**Real World Example:**
+Let's take the example of the `open()` system call, which is used to open files. Here's a simplified overview:
+
+1. In user space, a program calls the `open()` function from the C library.
+
+2. The `open()` function translates this high-level call into a system call number (e.g., using the `syscall()` function).
+
+3. The `syscall()` function triggers the `int 0x80` instruction on x86, signaling a software interrupt and switching the processor to kernel mode.
+
+4. The interrupt handler or assembly code responsible for handling system calls looks up the system call number (e.g., `__NR_open` defined in `unistd.h`), finds the corresponding C function pointer in the system call table, and calls the `sys_open()` C function.
+
+5. The `sys_open()` C function, implemented in the kernel's `fs/open.c` file, performs the necessary operations to open the requested file, checks permissions, and returns the file descriptor to the calling program.
+
+6. Control is then returned to user space, and the file descriptor is available to the program.
+
+This example demonstrates how a user-space program interacts with the kernel using the `open()` system call, illustrating the journey from the user-space API call to the actual execution of kernel code.
