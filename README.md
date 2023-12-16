@@ -297,3 +297,62 @@ Let's take the example of the `open()` system call, which is used to open files.
 6. Control is then returned to user space, and the file descriptor is available to the program.
 
 This example demonstrates how a user-space program interacts with the kernel using the `open()` system call, illustrating the journey from the user-space API call to the actual execution of kernel code.
+
+**Real World Example w/ read function:**
+The `read` function in the context of a programming language like `C` is commonly used to read data from a file descriptor, such as a file or a stream. Let's consider a simple example in C where the read function is used to read data from a file and then display it.
+
+Suppose you have a file named `example.txt` with the following content: `Hello, this is an example file for the read function`
+
+Now, let's create a C program to read this file using the read function:
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+#define BUFFER_SIZE 1024
+
+int main() {
+    int file_descriptor;
+    char buffer[BUFFER_SIZE];
+    ssize_t bytesRead;
+
+    // Open the file for reading
+    file_descriptor = open("example.txt", O_RDONLY);
+    
+    if (file_descriptor == -1) {
+        perror("Error opening file");
+        exit(EXIT_FAILURE);
+    }
+
+    // Read from the file
+    bytesRead = read(file_descriptor, buffer, BUFFER_SIZE - 1);
+
+    if (bytesRead == -1) {
+        perror("Error reading from file");
+        exit(EXIT_FAILURE);
+    }
+
+    // Null-terminate the buffer to treat it as a string
+    buffer[bytesRead] = '\0';
+
+    // Display the read content
+    printf("Read from file:\n%s\n", buffer);
+
+    // Close the file descriptor
+    close(file_descriptor);
+
+    return 0;
+}
+```
+In this example:
+
+1. We use the `open` system call to open the file "example.txt" for reading (`O_RDONLY` flag).
+2. The `read` system call is used to read data from the file into the `buffer`.
+3. The content read from the file is then displayed using `printf`.
+4. Finally, the file descriptor is closed using the `close` system call.
+
+Compile and run this program, and you should see the content of "example.txt" displayed on the console. This is a basic example, and in a real-world scenario, you might perform more error checking and handle larger files by reading in chunks.
+
+`gcc -o output_read read.c`
+`./output_read`
